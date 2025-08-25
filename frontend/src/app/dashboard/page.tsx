@@ -18,7 +18,7 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-semibold">Welcome, {user?.name}</h1>
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-medium">Projects</h2>
-        <Link className="px-3 py-2 border rounded" href="/dashboard">+ New</Link>
+        <Link className="px-3 py-2 border rounded" href="/dashboard/projects/new">+ New</Link>
       </div>
       {isLoading && <p>Loading...</p>}
       <ul className="grid gap-3 md:grid-cols-2">
