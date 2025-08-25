@@ -18,7 +18,7 @@ export default function LoginPage() {
   const onSubmit = async (values: FormValues) => {
     try {
       const res = await loginApi(values.email, values.password);
-      setAuth(res.accessToken, res.refreshToken, res.user);
+      setAuth(res.accessToken, res.user);
       router.push('/dashboard');
     } catch (e: any) {
       alert(e?.response?.data?.error || 'Login failed');

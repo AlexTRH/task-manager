@@ -44,7 +44,10 @@ api.interceptors.response.use((res) => res, async (error) => {
 
 export default api;
 
-export async function loginApi(email: string, password: string) {
+export async function loginApi(
+  email: string,
+  password: string
+): Promise<{ accessToken: string; user: { id: string; email: string; name: string } }> {
   const res = await api.post('/auth/login', { email, password });
   return res.data;
 }
