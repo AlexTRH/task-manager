@@ -55,7 +55,7 @@ model Task {
 
 model RefreshToken {
   id        String   @id @default(cuid())
-  token     String   @unique
+  tokenHash String   @unique @map("token")
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   revoked   Boolean  @default(false)
