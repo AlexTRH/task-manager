@@ -4,6 +4,7 @@ import { useTasks, useCreateTask, useUpdateTask, useDeleteTask } from '../../../
 import { useAuthStore } from '../../../../store/auth.store';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useProject, useUpdateProject, useDeleteProject } from '../../../../hooks/use-projects';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -12,17 +13,46 @@ export default function ProjectDetailPage() {
   const router = useRouter();
   useEffect(() => { if (!isAuthed()) router.push('/login'); }, [isAuthed, router]);
 
+  const { data: project } = useProject(projectId);
+  const updateProject = useUpdateProject();
+  const deleteProject = useDeleteProject();
   const { data: tasks, isLoading, refetch } = useTasks(projectId);
   const createTask = useCreateTask(projectId);
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const [title, setTitle] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    if (project) {
+      setName(project.name);
+      setDescription(project.description || '');
+    }
+  }, [project]);
 
   if (!isAuthed()) return null;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Project</h1>
+      <h1 className="text-2xl font-semibold">{name || 'Project'}</h1>
+
+      <form className="space-y-3" onSubmit={async e => {
+        e.preventDefault();
+        await updateProject.mutateAsync({ id: projectId, name, description });
+      }}>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Name" className="border rounded px-3 py-2 w-full" />
+        <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Description" className="border rounded px-3 py-2 w-full" />
+        <div className="flex gap-2">
+          <button className="px-4 py-2 bg-black text-white rounded disabled:opacity-50" disabled={updateProject.isPending}>Save</button>
+          <button type="button" className="px-4 py-2 border rounded text-red-600 disabled:opacity-50" onClick={async () => {
+            if (confirm('Delete project?')) {
+              await deleteProject.mutateAsync({ id: projectId });
+              router.push('/dashboard');
+            }
+          }} disabled={deleteProject.isPending}>Delete Project</button>
+        </div>
+      </form>
 
       <form className="flex gap-2" onSubmit={async e => {
         e.preventDefault();
